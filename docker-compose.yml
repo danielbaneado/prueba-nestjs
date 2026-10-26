@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: ${DB_CONTAINER_NAME:-sapmi-db}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-nodejs}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cambiar_en_produccion}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+    ports:
+      - "${POSTGRES_HOST_PORT:-5433}:${POSTGRES_PORT:-5432}"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: ${APP_CONTAINER_NAME:-sapmi-backend}
+    env_file: .env
+    ports:
+      - "${APP_PORT:-5001}:3000"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
