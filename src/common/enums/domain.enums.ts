@@ -16,5 +16,10 @@ export enum MaintenanceStates{
   CANCELLED= "cancelled"
 }
 
+export enum MaintenanceTypes{
+  PREVENTIVE= "preventive",
+  CORRECTIVE= "corrective"
+}
+
 export const enumValues = <T extends Record<string, string>>(e: T): Array<T[keyof T]> =>
   Object.values(e) as Array<T[keyof T]>;

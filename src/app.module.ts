@@ -9,11 +9,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './modules/user/user.entity.js';
 import { Vehicle } from './modules/vehicle/vehicle.entity.js';
 import { Mechanic } from './modules/mechanic/mechanic.entity.js';
-import { Workshop } from './modules/workshop/workshop.entity.js';
+import { Maintenance } from './modules/maintenance/maintenance.entity.js';
 import { VehicleModule } from './modules/vehicle/vehicle.module.js';
 import { MechanicModule } from './modules/mechanic/mechanic.module.js';
 import { WorkshopModule } from './modules/workshop/workshop.module.js';
-
+import { Workshop } from './modules/workshop/workshop.entity.js';
+import { MaintenanceModule } from './modules/maintenance/maintenance.module.js';
 /**
  * Módulo raíz.
  *
@@ -31,9 +32,9 @@ import { WorkshopModule } from './modules/workshop/workshop.module.js';
     username: process.env.POSTGRES_USER ?? 'postgres', 
     password: process.env.POSTGRES_PASSWORD ?? 'postgres', 
     database: process.env.POSTGRES_DB ?? 'fleetcore', 
-    entities: [User, Vehicle, Mechanic, Workshop], 
+    entities: [User, Vehicle, Mechanic, Workshop, Maintenance], 
     synchronize: true }), 
-    UtilsModule, AuthModule, UserModule, VehicleModule, MechanicModule, WorkshopModule],
+    UtilsModule, AuthModule, UserModule, VehicleModule, MechanicModule, WorkshopModule, MaintenanceModule],
   controllers: [AppController],
   providers: [AppService, ConfigService],
   exports: [ConfigService],

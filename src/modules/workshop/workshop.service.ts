@@ -6,8 +6,12 @@ import { WorkshopDao } from './dao/workshop.dao.js';
 export class WorkshopService {
   constructor(private readonly dao: WorkshopDao) {}
 
-  async findAll(): Promise<Workshop[]> { return this.dao.findAll(); }
-  async findById(id: string): Promise<Workshop | undefined> { return this.dao.findById(id); }
+  async findAll(): Promise<Workshop[]> { 
+    return this.dao.findAll(); 
+  }
+  async findById(id: string): Promise<Workshop | undefined> { 
+    return this.dao.findById(id); 
+  }
 
   async create(data: Omit<Workshop, 'id' | 'createdAt' | 'updatedAt'>): Promise<Workshop> {
     return this.dao.create(data);
