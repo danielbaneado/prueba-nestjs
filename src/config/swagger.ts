@@ -12,7 +12,7 @@ API REST para gestionar el mantenimiento de la flota de vehículos de FleetCore.
 
 export const swaggerConfiguration = (app: INestApplication): void => {
   const config = new DocumentBuilder()
-    .setTitle('FleetCore Maintenance API')
+    .setTitle('SapmiFleetCore Maintenance API')
     .setDescription(descripcion)
     .setVersion('1.0.0')
     .addBearerAuth()
