@@ -9,11 +9,6 @@ export enum VehicleStates {
   INACTIVE = "inactive"
 }
 
-export enum MechanicStates{
-  "ACTIVE"= "active",
-  "INACTIVE"= "inactive"
-}
-
 export enum MaintenanceStates{
   SCHEDULED= "scheduled",
   IN_PROGRESS= "in_progress",

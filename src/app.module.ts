@@ -9,8 +9,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './modules/user/user.entity.js';
 import { Vehicle } from './modules/vehicle/vehicle.entity.js';
 import { Mechanic } from './modules/mechanic/mechanic.entity.js';
+import { Workshop } from './modules/workshop/workshop.entity.js';
 import { VehicleModule } from './modules/vehicle/vehicle.module.js';
 import { MechanicModule } from './modules/mechanic/mechanic.module.js';
+import { WorkshopModule } from './modules/workshop/workshop.module.js';
 
 /**
  * Módulo raíz.
@@ -22,7 +24,16 @@ import { MechanicModule } from './modules/mechanic/mechanic.module.js';
  */
 @Global()
 @Module({
-  imports: [TypeOrmModule.forRoot({ type: 'postgres', host: process.env.POSTGRES_HOST ?? 'localhost', port: Number(process.env.POSTGRES_PORT ?? 5432), username: process.env.POSTGRES_USER ?? 'postgres', password: process.env.POSTGRES_PASSWORD ?? 'postgres', database: process.env.POSTGRES_DB ?? 'fleetcore', entities: [User, Vehicle, Mechanic], synchronize: true }), UtilsModule, AuthModule, UserModule, VehicleModule, MechanicModule],
+  imports: [TypeOrmModule.forRoot({ 
+    type: 'postgres', 
+    host: process.env.POSTGRES_HOST ?? 'localhost', 
+    port: Number(process.env.POSTGRES_PORT ?? 5432), 
+    username: process.env.POSTGRES_USER ?? 'postgres', 
+    password: process.env.POSTGRES_PASSWORD ?? 'postgres', 
+    database: process.env.POSTGRES_DB ?? 'fleetcore', 
+    entities: [User, Vehicle, Mechanic, Workshop], 
+    synchronize: true }), 
+    UtilsModule, AuthModule, UserModule, VehicleModule, MechanicModule, WorkshopModule],
   controllers: [AppController],
   providers: [AppService, ConfigService],
   exports: [ConfigService],
