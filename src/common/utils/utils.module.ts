@@ -1,6 +1,5 @@
 import { Global, Module } from '@nestjs/common';
 import { Bcrypt } from './bcrypt.js';
-import { Captcha } from './captcha.js';
 import { Jwt } from './jwt.js';
 import { AppLogger } from './logger.js';
 import { Password } from './password.js';
@@ -15,7 +14,7 @@ import { TokenExpiry } from './token-expiry.js';
  */
 @Global()
 @Module({
-  providers: [Bcrypt, Captcha, Jwt, AppLogger, Password, TokenExpiry],
-  exports: [Bcrypt, Captcha, Jwt, AppLogger, Password, TokenExpiry],
+  providers: [Bcrypt, Jwt, AppLogger, Password, TokenExpiry],
+  exports: [Bcrypt, Jwt, AppLogger, Password, TokenExpiry],
 })
 export class UtilsModule {}

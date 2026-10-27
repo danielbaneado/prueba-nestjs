@@ -7,7 +7,6 @@ import {
 import { Config, ConfigService } from '../../config/config.service.js';
 import { Jwt } from '../../common/utils/jwt.js';
 import { Bcrypt } from '../../common/utils/bcrypt.js';
-import { Captcha } from '../../common/utils/captcha.js';
 import { UserService } from '../user/user.service.js';
 import { User, UserResponse } from '../user/user.entity.js';
 import { createCookieOptions } from '../../config/cookie.js';
@@ -40,7 +39,6 @@ export class AuthService {
   constructor(
     private readonly jwt: Jwt,
     private readonly bcrypt: Bcrypt,
-    private readonly captcha: Captcha,
     private readonly userService: UserService,
     private readonly configService: ConfigService,
   ) {}
@@ -49,13 +47,8 @@ export class AuthService {
    * Valida un captcha y autentica al usuario.
    * Devuelve el usuario (sin hash) y los tokens de acceso/refresh.
    */
-  async login(email: string, rawPassword: string, captchaToken: string, captchaAnswer: number): Promise<LoginResult> {
-    // 1. Validar captcha (uso único).
-    if (!this.captcha.verifyCaptcha(captchaToken, captchaAnswer)) {
-      throw new BadRequestException('Captcha inválido o expirado');
-    }
+  async login(email: string, rawPassword: string): Promise<LoginResult> {
 
-    // 2. Buscar usuario.
     const user = await this.userService.findByEmail(email);
     // No revelamos si el email existe: mismo error genérico.
     if (!user) {
@@ -63,12 +56,10 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    // 3. Verificar bloqueo.
     if (user.lockedUntil && user.lockedUntil > new Date()) {
       throw new UnauthorizedException('Cuenta bloqueada. Inténtalo más tarde');
     }
 
-    // 4. Comparar contraseña.
     const passwordOk = await this.bcrypt.comparePassword(rawPassword, user.passwordHash);
     if (!passwordOk) {
       await this.userService.recordFailedAttempt(user.id);
@@ -76,10 +67,8 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    // 5. Éxito: limpiar intentos.
     await this.userService.resetFailures(user.id);
 
-    // 6. Generar tokens.
     const tokens = this.generateTokens(user);
 
     return { user: new UserResponse(user), tokens };

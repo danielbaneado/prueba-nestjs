@@ -32,8 +32,6 @@ export class AuthController {
     const result = await this.authService.login(
       dto.email,
       dto.password,
-      dto.captchaToken,
-      dto.captchaAnswer,
     );
 
     res.cookie(
