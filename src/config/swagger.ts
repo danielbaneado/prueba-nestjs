@@ -17,6 +17,7 @@ export const swaggerConfiguration = (app: INestApplication): void => {
     .setVersion('1.0.0')
     .addBearerAuth()
     .addApiKey({ type: 'apiKey', in: 'header', name: 'x-api-key' }, 'api-key')
+    .addApiKey({ type: 'apiKey', in: 'header', name: 'x-seed-api-key' }, 'seed-api-key')
     .addSecurityRequirements('bearer')
     .build();
 
