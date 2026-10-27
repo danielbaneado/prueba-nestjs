@@ -4,7 +4,8 @@ import { AppService } from './app.service.js';
 import { ConfigService } from './config/config.service.js';
 import { UtilsModule } from './common/utils/utils.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
-import { UsersModule } from './modules/user/user.module.js';
+import { UserModule } from './modules/user/user.module.js';
+import { VehicleModule } from './modules/vehicle/vehicle.module.js';
 
 /**
  * Módulo raíz.
@@ -16,7 +17,7 @@ import { UsersModule } from './modules/user/user.module.js';
  */
 @Global()
 @Module({
-  imports: [UtilsModule, AuthModule, UsersModule],
+  imports: [UtilsModule, AuthModule, UserModule, VehicleModule],
   controllers: [AppController],
   providers: [AppService, ConfigService],
   exports: [ConfigService],

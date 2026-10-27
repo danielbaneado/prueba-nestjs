@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service.js';
 import { AuthController } from './auth.controller.js';
-import { UsersModule } from '../user/user.module.js';
+import { UserModule } from '../user/user.module.js';
 
 /**
  * Módulo de autenticación.
@@ -11,7 +11,7 @@ import { UsersModule } from '../user/user.module.js';
  * El `JwtGuard` es un guard custom (no usa Passport).
  */
 @Module({
-  imports: [UsersModule],
+  imports: [UserModule],
   providers: [AuthService],
   controllers: [AuthController],
   exports: [AuthService],

@@ -8,4 +8,4 @@ import { UserController } from './user.controller.js';
   controllers: [UserController],
   exports: [UserService, UserDao],
 })
-export class UsersModule {}
+export class UserModule {}

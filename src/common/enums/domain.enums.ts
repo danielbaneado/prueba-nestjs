@@ -4,9 +4,9 @@ export enum UserRoles {
 }
 
 export enum VehicleStates {
-  ACTIVE= "active",
-  IN_MAINTENANCE= "in_maintenance",
-  INACTIVE= "inactive"
+  AVAILABLE = "available",
+  IN_MAINTENANCE = "in_maintenance",
+  INACTIVE = "inactive"
 }
 
 export enum MaintenanceStates{
