@@ -1,29 +1,43 @@
-# FleetCore - API de mantenimiento de flota
+# FleetCore - Fleet Maintenance API
 
-API REST con NestJS, TypeScript, JWT, TypeORM y PostgreSQL para administrar vehículos, mecánicos, talleres y mantenimientos de la flota.
+REST API built with NestJS, TypeScript, JWT, TypeORM and PostgreSQL to manage vehicles, mechanics, workshops and maintenance records.
 
-## Descripción de módulos
+## Module overview
 
-- `auth`: registro/login, JWT, guards, decoradores (@Roles, @CurrentUser, @Public), API key.
-- `user`: usuarios y roles ADMIN/TECHNICIAN.
-- `vehicle`: CRUD de vehículos, estados AVAILABLE/IN_MAINTENANCE/INACTIVE.
-- `mechanic`: CRUD de mecánicos, activación/inactivación.
-- `workshop`: CRUD de talleres, activación/inactivación.
-- `maintenance`: creación, cambio de estado, historial, reglas de negocio.
-- `seed`: endpoint protegido por SEED_API_KEY.
-- `common`: guards, filtros, interceptores, enums, utilidades.
-- `config`: configuración y variables de entorno.
-- `database`: migraciones y seeds.
+- `auth`: authentication/authorization (login, refresh, logout, guards, decorators, API key).
+- `user`: users and roles (ADMIN/TECHNICIAN).
+- `vehicle`: vehicle CRUD and states (AVAILABLE/IN_MAINTENANCE/INACTIVE).
+- `mechanic`: mechanic CRUD and activation.
+- `workshop`: workshop CRUD and activation.
+- `maintenance`: maintenance creation, state transitions, history and business rules.
+- `seed`: seed endpoint protected by SEED_API_KEY.
+- `common`: guards, filters, interceptors, enums, utilities.
+- `config`: configuration and environment variables.
+- `database`: migrations and seeds.
 
-## Inicialización paso a paso
+## Initialization
 
-1. Copiar `.env.example` a `.env` y ajustar variables (DB, JWT, API_KEY, SEED_API_KEY).
-2. Instalar dependencias: `npm install`
-3. Levantar PostgreSQL (docker compose up -d).
-4. Ejecutar migraciones: `npm run migration:run`
-5. Ejecutar seed: `npm run seed` o `POST /seed` con header `x-seed-api-key`.
-6. Iniciar servidor: `npm run start:dev`
+1. Copy `.env.example` to `.env` and fill values.
+2. Install dependencies: `npm install`
+3. Start database: `docker compose up -d db`
+4. Run migrations: `npm run migration:run`
+5. Run seed: `npm run seed` or `POST /seed` with `x-seed-api-key`.
+6. Start server: `npm run start:dev`
 
 ## Swagger
 
-Documentación disponible en: http://localhost:5001/api/docs
+Documentation: http://localhost:3000/api/docs
+
+## Seed data
+
+- 1 ADMIN and 2 TECHNICIAN users
+- 3 mechanics (2 active, 1 inactive)
+- 2 workshops (1 active, 1 inactive)
+- 4 vehicles (2 available, 1 in maintenance, 1 inactive)
+- 1 completed maintenance for history
+
+## Notes
+
+- JWT via cookie `session_token` or Bearer header.
+- x-api-key for external integration endpoint.
+- x-seed-api-key for seed endpoint.
