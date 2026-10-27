@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './auth.service.js';
-import type { LoginDto, RefreshDto } from './dto/auth.dto.js';
+import { LoginDto, RefreshDto } from './dto/auth.dto.js';
 import { JwtGuard } from '../../common/guards/jwt.guard.js';
 import { CurrentUser } from '../../common/decorators/current-user.decorator.js';
 import { Roles } from '../../common/decorators/roles.decorator.js';
