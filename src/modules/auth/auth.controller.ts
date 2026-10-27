@@ -12,7 +12,7 @@ import type { LoginDto, RefreshDto } from './dto/auth.dto.js';
 import { JwtGuard } from '../../common/guards/jwt.guard.js';
 import { CurrentUser } from '../../common/decorators/current-user.decorator.js';
 import { Roles } from '../../common/decorators/roles.decorator.js';
-import { UserRoles, type User, type UserResponse } from '../users/user.entity.js';
+import { UserRoles, type User, type UserResponse } from '../user/user.entity.js';
 
 export interface LoginResponse {
   user: UserResponse;

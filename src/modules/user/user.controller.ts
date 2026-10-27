@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { UserRoles, UserResponse } from './user.entity.js';
 import type { User } from './user.entity.js';
-import { UsersService } from './users.service.js';
+import { UsersService } from './user.service.js';
 import { JwtGuard } from '../../common/guards/jwt.guard.js';
 import { RolesGuard } from '../../common/guards/roles.guard.js';
 import { Roles } from '../../common/decorators/roles.decorator.js';
@@ -60,7 +60,7 @@ export class UserController {
     return this.usersService.create(
       dto.email,
       dto.password,
-      dto.roles ?? [UserRoles.USUARIO],
+      dto.roles ?? [UserRoles.TECHNICIAN],
     );
   }
 }

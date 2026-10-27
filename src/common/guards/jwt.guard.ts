@@ -4,7 +4,8 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import type { Request } from 'express';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator.js';
 import { Jwt } from '../utils/jwt.js';
 import { Config, ConfigService } from '../../config/config.service.js';
 
@@ -21,11 +22,18 @@ export class JwtGuard implements CanActivate {
   constructor(
     private readonly jwt: Jwt,
     configService: ConfigService,
+    private readonly reflector: Reflector,
   ) {
     this.jwtSecret = configService.getOrThrow(Config.JWT_SECRET);
   }
 
   async canActivate(ctx: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      ctx.getHandler(),
+      ctx.getClass(),
+    ]);
+    if (isPublic) return true;
+
     const request = ctx.switchToHttp().getRequest<Request>();
     const token = this.extractToken(request);
 
@@ -47,11 +55,11 @@ export class JwtGuard implements CanActivate {
    * El header es útil para testing y para clients que no manejan cookies.
    */
   private extractToken(request: Request): string | undefined {
-    const cookies = request.cookies as Record<string, string> | undefined;
+    const cookies = (request as any).cookies as Record<string, string> | undefined;
     const cookieToken = cookies?.session_token;
     if (cookieToken) return cookieToken;
 
-    const authHeader = request.headers.authorization;
+    const authHeader = (request.headers as any).authorization;
     if (authHeader?.startsWith('Bearer ')) {
       return authHeader.slice('Bearer '.length);
     }

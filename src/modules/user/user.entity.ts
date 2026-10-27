@@ -13,7 +13,7 @@ export class User {
   @Column({ name: 'password_hash' })
   passwordHash: string;
 
-  @Column({ type: 'enum', enum: UserRoles, array: true, default: [UserRoles.USUARIO] })
+  @Column({ type: 'enum', enum: UserRoles, array: true, default: [UserRoles.TECHNICIAN] })
   roles: UserRoles[];
 
   @Column({ name: 'failed_attempts', default: 0 })

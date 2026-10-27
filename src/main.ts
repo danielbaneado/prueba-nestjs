@@ -12,6 +12,7 @@ import { createCorsMiddleware } from './config/cors.js';
 import { createAuthLimiter, createGlobalLimiter } from './config/rate-limit.js';
 import { swaggerConfiguration } from './config/swagger.js';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor.js';
 import { AppModule } from './app.module.js';
 
 // Carga (y exige) .env antes de que cualquier módulo lea process.env.
@@ -56,6 +57,7 @@ async function bootstrap() {
 
   // Filtro global de excepciones: normaliza cualquier error a una respuesta consistente.
   app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
+  app.useGlobalInterceptors(new ResponseInterceptor());
 
   // Cierre ordenado (SIGTERM/SIGINT) para contenedores y orquestadores.
   app.enableShutdownHooks();

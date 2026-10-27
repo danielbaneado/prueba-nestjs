@@ -4,7 +4,7 @@ import { AppService } from './app.service.js';
 import { ConfigService } from './config/config.service.js';
 import { UtilsModule } from './common/utils/utils.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
-import { UsersModule } from './modules/users/users.module.js';
+import { UsersModule } from './modules/user/user.module.js';
 
 /**
  * Módulo raíz.

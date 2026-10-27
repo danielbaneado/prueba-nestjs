@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UserStore } from './user.store.js';
-import { UsersService } from './users.service.js';
-import { UserController } from './users.controller.js';
+import { UsersService } from './user.service.js';
+import { UserController } from './user.controller.js';
 
 /**
  * Módulo de gestión de usuarios.

@@ -47,6 +47,9 @@ export enum Config {
   // Seguridad de la cuenta
   MAX_FAILED_ATTEMPTS = 'MAX_FAILED_ATTEMPTS',
 
+  // Integraciones externas
+  API_KEY = 'API_KEY',
+
   // Fortaleza de contraseña (configurables por entorno)
   PASSWORD_MIN_LENGTH = 'PASSWORD_MIN_LENGTH',
   PASSWORD_REQUIRE_DIGIT = 'PASSWORD_REQUIRE_DIGIT',

@@ -1,6 +1,19 @@
 export enum UserRoles {
   ADMIN= 'admin',
-  USUARIO= 'usuario'
+  TECHNICIAN= 'technician'
+}
+
+export enum VehicleStates {
+  ACTIVE= "active",
+  IN_MAINTENANCE= "in_maintenance",
+  INACTIVE= "inactive"
+}
+
+export enum MaintenanceStates{
+  SCHEDULED= "scheduled",
+  IN_PROGRESS= "in_progress",
+  COMPLETED= "completed",
+  CANCELLED= "cancelled"
 }
 
 export const enumValues = <T extends Record<string, string>>(e: T): Array<T[keyof T]> =>

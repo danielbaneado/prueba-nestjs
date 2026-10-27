@@ -8,8 +8,8 @@ import { Config, ConfigService } from '../../config/config.service.js';
 import { Jwt } from '../../common/utils/jwt.js';
 import { Bcrypt } from '../../common/utils/bcrypt.js';
 import { Captcha } from '../../common/utils/captcha.js';
-import { UsersService } from '../users/users.service.js';
-import { User, UserResponse } from '../users/user.entity.js';
+import { UsersService } from '../user/user.service.js';
+import { User, UserResponse } from '../user/user.entity.js';
 import { createCookieOptions } from '../../config/cookie.js';
 
 export interface AuthTokens {
