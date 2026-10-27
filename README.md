@@ -1,33 +1,29 @@
-# prueba-nestjs
+# FleetCore - API de mantenimiento de flota
 
-Plantilla NestJS (TypeScript, ESM) para backends con autenticación por cookie JWT, gestión de usuarios, rate limiting, CORS, Helmet, Swagger y validación de DTOs.
+API REST con NestJS, TypeScript, JWT, TypeORM y PostgreSQL para administrar vehículos, mecánicos, talleres y mantenimientos de la flota.
 
-## Requisitos
-- Node.js >= 20
-- npm
+## Descripción de módulos
 
-## Setup
-```bash
-cp .env.example .env
-npm install
-```
+- `auth`: registro/login, JWT, guards, decoradores (@Roles, @CurrentUser, @Public), API key.
+- `user`: usuarios y roles ADMIN/TECHNICIAN.
+- `vehicle`: CRUD de vehículos, estados AVAILABLE/IN_MAINTENANCE/INACTIVE.
+- `mechanic`: CRUD de mecánicos, activación/inactivación.
+- `workshop`: CRUD de talleres, activación/inactivación.
+- `maintenance`: creación, cambio de estado, historial, reglas de negocio.
+- `seed`: endpoint protegido por SEED_API_KEY.
+- `common`: guards, filtros, interceptores, enums, utilidades.
+- `config`: configuración y variables de entorno.
+- `database`: migraciones y seeds.
 
-## Persistencia
-La plantilla usa un store en memoria (`UserStore`). Los datos se pierden al reiniciar. Para producción, migrar a PostgreSQL/TypeORM (variables `DB_*`/`POSTGRES_*` reservadas en `.env.example`).
+## Inicialización paso a paso
 
-## Ejecutar
-```bash
-npm run start:dev   # desarrollo con watch
-npm run build && npm run start:prod
-```
+1. Copiar `.env.example` a `.env` y ajustar variables (DB, JWT, API_KEY, SEED_API_KEY).
+2. Instalar dependencias: `npm install`
+3. Levantar PostgreSQL (docker compose up -d).
+4. Ejecutar migraciones: `npm run migration:run`
+5. Ejecutar seed: `npm run seed` o `POST /seed` con header `x-seed-api-key`.
+6. Iniciar servidor: `npm run start:dev`
 
-## Tests
-```bash
-npm run test        # unitarios
-npm run test:e2e    # e2e
-npm run test:cov    # cobertura
-npm run lint
-```
+## Swagger
 
-## Licencia
-UNLICENSED
+Documentación disponible en: http://localhost:5001/api/docs

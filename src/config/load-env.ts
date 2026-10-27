@@ -17,14 +17,14 @@ export function loadEnv(): void {
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
   const envFilePath = path.resolve(__dirname, '..', '..', '.env');
 
-  if (!fs.existsSync(envFilePath)) {
+  if (fs.existsSync(envFilePath)) {
+    config({ path: envFilePath, quiet: true });
+  } else if (!process.env.POSTGRES_HOST && !process.env.JWT_SECRET) {
     console.error(
       `.env no encontrado en ${envFilePath}. Copia .env.example a .env y completa los valores.`,
     );
     process.exit(1);
   }
-
-  config({ path: envFilePath, quiet: true });
 
   // Validación de secretos en producción: no permitir placeholders.
   if (process.env.NODE_ENV === 'production') {

@@ -16,7 +16,7 @@ services:
     container_name: ${APP_CONTAINER_NAME:-sapmi-backend}
     env_file: .env
     ports:
-      - "${APP_PORT:-5001}:3000"
+      - "${APP_PORT:-5003}:5003"
     depends_on:
       - db
 
