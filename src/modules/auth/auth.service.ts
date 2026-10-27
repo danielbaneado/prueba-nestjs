@@ -8,7 +8,7 @@ import { Config, ConfigService } from '../../config/config.service.js';
 import { Jwt } from '../../common/utils/jwt.js';
 import { Bcrypt } from '../../common/utils/bcrypt.js';
 import { Captcha } from '../../common/utils/captcha.js';
-import { UsersService } from '../user/user.service.js';
+import { UserService } from '../user/user.service.js';
 import { User, UserResponse } from '../user/user.entity.js';
 import { createCookieOptions } from '../../config/cookie.js';
 
@@ -41,7 +41,7 @@ export class AuthService {
     private readonly jwt: Jwt,
     private readonly bcrypt: Bcrypt,
     private readonly captcha: Captcha,
-    private readonly usersService: UsersService,
+    private readonly userService: UserService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -56,7 +56,7 @@ export class AuthService {
     }
 
     // 2. Buscar usuario.
-    const user = await this.usersService.findByEmail(email);
+    const user = await this.userService.findByEmail(email);
     // No revelamos si el email existe: mismo error genérico.
     if (!user) {
       await this.failLogin(email);
@@ -71,13 +71,13 @@ export class AuthService {
     // 4. Comparar contraseña.
     const passwordOk = await this.bcrypt.comparePassword(rawPassword, user.passwordHash);
     if (!passwordOk) {
-      await this.usersService.recordFailedAttempt(user.id);
+      await this.userService.recordFailedAttempt(user.id);
       await this.failLogin(email);
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
     // 5. Éxito: limpiar intentos.
-    await this.usersService.resetFailures(user.id);
+    await this.userService.resetFailures(user.id);
 
     // 6. Generar tokens.
     const tokens = this.generateTokens(user);
@@ -92,7 +92,7 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token inválido o expirado');
     }
 
-    const user = await this.usersService.findById(payload.sub as string);
+    const user = await this.userService.findById(payload.sub as string);
     if (!user) {
       throw new UnauthorizedException('Usuario no encontrado');
     }

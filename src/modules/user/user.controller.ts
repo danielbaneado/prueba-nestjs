@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { UserRoles, UserResponse } from './user.entity.js';
 import type { User } from './user.entity.js';
-import { UsersService } from './user.service.js';
+import { UserService } from './user.service.js';
 import { JwtGuard } from '../../common/guards/jwt.guard.js';
 import { RolesGuard } from '../../common/guards/roles.guard.js';
 import { Roles } from '../../common/decorators/roles.decorator.js';
@@ -26,13 +26,13 @@ export class CreateUserDto {
 @Controller('users')
 @UseGuards(JwtGuard, RolesGuard)
 export class UserController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly userService: UserService) {}
 
   /** Lista todos los usuarios (solo ADMIN). */
   @Get()
   @Roles(UserRoles.ADMIN)
   async findAll(): Promise<UserResponse[]> {
-    const users = await this.usersService.findAll();
+    const users = await this.userService.findAll();
     return users.map((u) => new UserResponse(u));
   }
 
@@ -42,7 +42,7 @@ export class UserController {
     @Param('id') id: string,
     @CurrentUser() currentUser: User,
   ): Promise<UserResponse> {
-    const user = await this.usersService.findById(id);
+    const user = await this.userService.findById(id);
     if (!user) {
       throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
     }
@@ -57,7 +57,7 @@ export class UserController {
   @Post()
   @Roles(UserRoles.ADMIN)
   async create(@Body() dto: CreateUserDto): Promise<UserResponse> {
-    return this.usersService.create(
+    return this.userService.create(
       dto.email,
       dto.password,
       dto.roles ?? [UserRoles.TECHNICIAN],

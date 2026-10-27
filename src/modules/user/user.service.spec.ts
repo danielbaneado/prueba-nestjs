@@ -1,29 +1,29 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './user.service.js';
-import { UserStore } from './user.store.js';
+import { UserService } from './user.service.js';
+import { UserDao } from './dao/user.dao.js';
 import { Bcrypt } from '../../common/utils/bcrypt.js';
 import { Password } from '../../common/utils/password.js';
 import { ConfigService } from '../../config/config.service.js';
 import { UserRoles } from '../../common/enums/domain.enums.js';
 
-describe('UsersService', () => {
-  let service: UsersService;
-  let store: UserStore;
+describe('UserService', () => {
+  let service: UserService;
+  let dao: UserDao;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UsersService,
-        UserStore,
+        UserService,
+        UserDao,
         Bcrypt,
         Password,
         ConfigService,
       ],
     }).compile();
 
-    service = module.get(UsersService);
-    store = module.get(UserStore);
-    store.clear();
+    service = module.get(UserService);
+    dao = module.get(UserDao);
+    dao.clear();
   });
 
   it('crea un usuario nuevo', async () => {

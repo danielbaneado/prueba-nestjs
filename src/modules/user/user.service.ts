@@ -3,7 +3,7 @@ import { Config, ConfigService } from '../../config/config.service.js';
 import { Bcrypt } from '../../common/utils/bcrypt.js';
 import { Password } from '../../common/utils/password.js';
 import { User, UserResponse } from './user.entity.js';
-import { UserStore } from './user.store.js';
+import { UserDao } from './dao/user.dao.js';
 
 /**
  * Servicio de gestión de usuarios.
@@ -12,11 +12,11 @@ import { UserStore } from './user.store.js';
  * fortaleza, y `UserStore` como capa de persistencia (placeholder para TypeORM).
  */
 @Injectable()
-export class UsersService {
-  private readonly logger = new Logger(UsersService.name);
+export class UserService {
+  private readonly logger = new Logger(UserService.name);
 
   constructor(
-    private readonly userStore: UserStore,
+    private readonly userDao: UserDao,
     private readonly bcrypt: Bcrypt,
     private readonly password: Password,
     private readonly configService: ConfigService,
@@ -24,7 +24,7 @@ export class UsersService {
 
   /** Crea un usuario nuevo. Lanza `ConflictException` si el email ya existe. */
   async create(email: string, rawPassword: string, roles: User['roles']): Promise<UserResponse> {
-    const existing = await this.userStore.findByEmail(email);
+    const existing = await this.userDao.findByEmail(email);
     if (existing) {
       throw new ConflictException('El email ya está registrado');
     }
@@ -37,7 +37,7 @@ export class UsersService {
     const saltRounds = this.configService.getNumber(Config.SALT_ROUNDS) ?? 10;
     const passwordHash = await this.bcrypt.hashPassword(rawPassword, saltRounds);
 
-    const user = await this.userStore.create({
+    const user = await this.userDao.create({
       email,
       passwordHash,
       roles,
@@ -50,29 +50,29 @@ export class UsersService {
 
   /** Busca un usuario por email (incluye el hash, solo para uso interno). */
   async findByEmail(email: string): Promise<User | undefined> {
-    return this.userStore.findByEmail(email);
+    return this.userDao.findByEmail(email);
   }
 
   /** Busca un usuario por id y devuelve la versión segura. */
   async findById(id: string): Promise<UserResponse | undefined> {
-    const user = await this.userStore.findById(id);
+    const user = await this.userDao.findById(id);
     return user ? new UserResponse(user) : undefined;
   }
 
   /** Marca un usuario como bloqueado por `durationMs` milisegundos. */
   async lockUser(id: string, durationMs: number): Promise<void> {
     const lockedUntil = new Date(Date.now() + durationMs);
-    await this.userStore.update(id, { lockedUntil });
+    await this.userDao.update(id, { lockedUntil });
   }
 
   /** Reinicia los intentos fallidos y el bloqueo de un usuario. */
   async resetFailures(id: string): Promise<void> {
-    await this.userStore.update(id, { failedAttempts: 0, lockedUntil: null });
+    await this.userDao.update(id, { failedAttempts: 0, lockedUntil: null });
   }
 
   /** Incrementa los intentos fallidos; bloquea el usuario si supera el límite. */
   async recordFailedAttempt(id: string): Promise<void> {
-    const user = await this.userStore.findById(id);
+    const user = await this.userDao.findById(id);
     if (!user) return;
 
     const maxAttempts = this.configService.getNumber(Config.MAX_FAILED_ATTEMPTS) ?? 5;
@@ -81,18 +81,18 @@ export class UsersService {
     if (next >= maxAttempts) {
       // Bloqueo de 15 minutos.
       const lockMs = 15 * 60 * 1000;
-      await this.userStore.update(id, {
+      await this.userDao.update(id, {
         failedAttempts: next,
         lockedUntil: new Date(Date.now() + lockMs),
       });
       this.logger.warn(`Usuario ${user.email} bloqueado por ${lockMs}ms (${next}/${maxAttempts} intentos)`);
     } else {
-      await this.userStore.update(id, { failedAttempts: next });
+      await this.userDao.update(id, { failedAttempts: next });
     }
   }
 
   /** Lista todos los usuarios (solo ADMIN). */
   async findAll(): Promise<User[]> {
-    return this.userStore.findAll();
+    return this.userDao.findAll();
   }
 }
