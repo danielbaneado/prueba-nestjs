@@ -1,5 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { AppController } from './app.controller.js';
+import { SeedModule } from './modules/seed/seed.module.js';
 import { AppService } from './app.service.js';
 import { ConfigService } from './config/config.service.js';
 import { UtilsModule } from './common/utils/utils.module.js';
@@ -34,7 +35,7 @@ import { MaintenanceModule } from './modules/maintenance/maintenance.module.js';
     database: process.env.POSTGRES_DB ?? 'fleetcore', 
     entities: [User, Vehicle, Mechanic, Workshop, Maintenance], 
     synchronize: true }), 
-    UtilsModule, AuthModule, UserModule, VehicleModule, MechanicModule, WorkshopModule, MaintenanceModule],
+    UtilsModule, AuthModule, UserModule, VehicleModule, MechanicModule, WorkshopModule, MaintenanceModule, SeedModule],
   controllers: [AppController],
   providers: [AppService, ConfigService],
   exports: [ConfigService],

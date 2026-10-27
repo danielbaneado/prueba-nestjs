@@ -10,13 +10,8 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  /** Healthcheck. El rate limiter global lo salta. */
   @Get('health')
   health(): { status: 'ok'; uptime: number; timestamp: string } {
-    return {
-      status: 'ok',
-      uptime: process.uptime(),
-      timestamp: new Date().toISOString(),
-    };
+    return { status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() };
   }
 }

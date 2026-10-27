@@ -49,6 +49,7 @@ export enum Config {
 
   // Integraciones externas
   API_KEY = 'API_KEY',
+  SEED_API_KEY = 'SEED_API_KEY',
 
   // Fortaleza de contraseña (configurables por entorno)
   PASSWORD_MIN_LENGTH = 'PASSWORD_MIN_LENGTH',
