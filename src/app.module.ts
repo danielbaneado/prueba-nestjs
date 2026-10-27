@@ -5,7 +5,12 @@ import { ConfigService } from './config/config.service.js';
 import { UtilsModule } from './common/utils/utils.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { UserModule } from './modules/user/user.module.js';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './modules/user/user.entity.js';
+import { Vehicle } from './modules/vehicle/vehicle.entity.js';
+import { Mechanic } from './modules/mechanic/mechanic.entity.js';
 import { VehicleModule } from './modules/vehicle/vehicle.module.js';
+import { MechanicModule } from './modules/mechanic/mechanic.module.js';
 
 /**
  * Módulo raíz.
@@ -17,7 +22,7 @@ import { VehicleModule } from './modules/vehicle/vehicle.module.js';
  */
 @Global()
 @Module({
-  imports: [UtilsModule, AuthModule, UserModule, VehicleModule],
+  imports: [TypeOrmModule.forRoot({ type: 'postgres', host: process.env.POSTGRES_HOST ?? 'localhost', port: Number(process.env.POSTGRES_PORT ?? 5432), username: process.env.POSTGRES_USER ?? 'postgres', password: process.env.POSTGRES_PASSWORD ?? 'postgres', database: process.env.POSTGRES_DB ?? 'fleetcore', entities: [User, Vehicle, Mechanic], synchronize: true }), UtilsModule, AuthModule, UserModule, VehicleModule, MechanicModule],
   controllers: [AppController],
   providers: [AppService, ConfigService],
   exports: [ConfigService],

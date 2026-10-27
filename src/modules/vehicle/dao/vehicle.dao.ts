@@ -1,42 +1,25 @@
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Vehicle } from '../vehicle.entity.js';
 
 export class VehicleDao {
-  private vehicles: Vehicle[] = [];
-  private counter = 0;
+  constructor(@InjectRepository(Vehicle) private readonly repo: Repository<Vehicle>) {}
 
-  async findAll(): Promise<Vehicle[]> {
-    return [...this.vehicles];
+  async findAll(): Promise<Vehicle[]> { 
+    return this.repo.find(); 
   }
-
-  async findById(id: string): Promise<Vehicle | undefined> {
-    return this.vehicles.find((v) => v.id === id);
+  async findById(id: string): Promise<Vehicle | undefined> { 
+    return (await this.repo.findOne({ where: { id } })) ?? undefined; 
   }
-
-  async findByPlate(plate: string): Promise<Vehicle | undefined> {
-    return this.vehicles.find((v) => v.plate === plate);
+  async findByPlate(plate: string): Promise<Vehicle | undefined> { 
+    return (await this.repo.findOne({ where: { plate } })) ?? undefined; 
   }
-
   async create(data: Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'>): Promise<Vehicle> {
-    const now = new Date();
-    const vehicle: Vehicle = {
-      ...data,
-      id: String(++this.counter),
-      createdAt: now,
-      updatedAt: now,
-    } as Vehicle;
-    this.vehicles.push(vehicle);
-    return vehicle;
+    const entity = this.repo.create(data as any);
+    return this.repo.save(entity) as any;
   }
-
   async update(id: string, data: Partial<Vehicle>): Promise<Vehicle | undefined> {
-    const idx = this.vehicles.findIndex((v) => v.id === id);
-    if (idx === -1) return undefined;
-    this.vehicles[idx] = { ...this.vehicles[idx], ...data, updatedAt: new Date() };
-    return this.vehicles[idx];
-  }
-
-  clear(): void {
-    this.vehicles = [];
-    this.counter = 0;
+    await this.repo.update(id, data as any);
+    return this.findById(id);
   }
 }

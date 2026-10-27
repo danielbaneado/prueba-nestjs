@@ -6,15 +6,35 @@ import { Password } from '../../common/utils/password.js';
 import { ConfigService } from '../../config/config.service.js';
 import { UserRoles } from '../../common/enums/domain.enums.js';
 
+class FakeUserDao {
+  private users: any[] = [];
+  private counter = 0;
+  async findByEmail(email: string) { return this.users.find((u) => u.email === email); }
+  async findById(id: string) { return this.users.find((u) => u.id === id); }
+  async findAll() { return [...this.users]; }
+  async create(data: any) {
+    const u = { ...data, id: String(++this.counter), createdAt: new Date(), updatedAt: new Date() };
+    this.users.push(u);
+    return u;
+  }
+  async update(id: string, data: any) {
+    const idx = this.users.findIndex((u) => u.id === id);
+    if (idx === -1) return undefined;
+    this.users[idx] = { ...this.users[idx], ...data };
+    return this.users[idx];
+  }
+  clear() { this.users = []; this.counter = 0; }
+}
+
 describe('UserService', () => {
   let service: UserService;
-  let dao: UserDao;
+  let dao: FakeUserDao;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
-        UserDao,
+        { provide: UserDao, useClass: FakeUserDao },
         Bcrypt,
         Password,
         ConfigService,
@@ -22,7 +42,7 @@ describe('UserService', () => {
     }).compile();
 
     service = module.get(UserService);
-    dao = module.get(UserDao);
+    dao = module.get(UserDao) as any;
     dao.clear();
   });
 

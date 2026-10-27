@@ -1,53 +1,30 @@
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { User } from '../user.entity.js';
 
 export class UserDao {
-  private users: User[] = [];
-  private counter = 0;
+  constructor(@InjectRepository(User) private readonly repo: Repository<User>) {}
 
   async findById(id: string): Promise<User | undefined> {
-    return this.users.find((u) => u.id === id);
+    return (await this.repo.findOne({ where: { id } })) ?? undefined;
   }
-
   async findByEmail(email: string): Promise<User | undefined> {
-    return this.users.find((u) => u.email === email);
+    return (await this.repo.findOne({ where: { email } })) ?? undefined;
   }
-
   async findAll(): Promise<User[]> {
-    return [...this.users];
+    return this.repo.find();
   }
-
   async create(data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
-    const now = new Date();
-    const user: User = {
-      ...data,
-      id: String(++this.counter),
-      createdAt: now,
-      updatedAt: now,
-    } as User;
-    this.users.push(user);
-    return user;
+    const entity = this.repo.create(data as any);
+    return this.repo.save(entity) as any;
   }
-
   async update(id: string, data: Partial<User>): Promise<User | undefined> {
-    const idx = this.users.findIndex((u) => u.id === id);
-    if (idx === -1) return undefined;
-    this.users[idx] = { ...this.users[idx], ...data, updatedAt: new Date() };
-    return this.users[idx];
+    await this.repo.update(id, data as any);
+    return this.findById(id);
   }
-
   async delete(id: string): Promise<boolean> {
-    const idx = this.users.findIndex((u) => u.id === id);
-    if (idx === -1) return false;
-    this.users.splice(idx, 1);
-    return true;
+    const res = await this.repo.delete(id);
+    return (res.affected ?? 0) > 0;
   }
-
-  count(): number {
-    return this.users.length;
-  }
-
-  clear(): void {
-    this.users = [];
-    this.counter = 0;
-  }
+  count(): number { return 0; }
 }
