@@ -1,25 +1,31 @@
-import { Exclude } from 'class-transformer';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Exclude, Expose } from 'class-transformer';
+import { IsEmail, IsArray, IsEnum, IsUUID } from 'class-validator';
 import { UserRoles } from '../../common/enums/domain.enums.js';
-
-// Re-exporta el enum para que los módulos de dominio puedan importarlo
-// desde `user.entity` sin tener que llegar a `common/enums`.
-export { UserRoles };
-
-/**
- * Modelo de usuario.
- *
- * NOTA: Esta es una interfaz simple mientras la base de datos no esté conectada.
- * Cuando se migre a TypeORM, reemplazar por una Entity con decoradores
- * (@Entity, @Column, @PrimaryGeneratedColumn, etc.) y un Repository.
- */
-export interface User {
+@Entity('users')
+export class User {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({ unique: true })
   email: string;
+
+  @Column({ name: 'password_hash' })
   passwordHash: string;
+
+  @Column({ type: 'enum', enum: UserRoles, array: true, default: [UserRoles.USUARIO] })
   roles: UserRoles[];
+
+  @Column({ name: 'failed_attempts', default: 0 })
   failedAttempts: number;
+
+  @Column({ name: 'locked_until', type: 'timestamp', nullable: true })
   lockedUntil: Date | null;
+
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
 
@@ -32,10 +38,23 @@ export interface User {
  */
 @Exclude()
 export class UserResponse {
+  @Expose()
+  @IsUUID()
   id: string;
+
+  @Expose()
+  @IsEmail()
   email: string;
+
+  @Expose()
+  @IsArray()
+  @IsEnum(UserRoles, { each: true })
   roles: UserRoles[];
+
+  @Expose()
   createdAt: Date;
+
+  @Expose()
   updatedAt: Date;
 
   constructor(partial: Partial<User>) {
@@ -46,3 +65,4 @@ export class UserResponse {
     this.updatedAt = partial.updatedAt as Date;
   }
 }
+export { UserRoles };
