@@ -3,7 +3,9 @@ import { Vehicle } from './vehicle.entity.js';
 import { VehicleService } from './vehicle.service.js';
 import { JwtGuard } from '../../common/guards/jwt.guard.js';
 import { RolesGuard } from '../../common/guards/roles.guard.js';
+import { ApiKeyGuard } from '../../common/guards/api-key.guard.js';
 import { Roles } from '../../common/decorators/roles.decorator.js';
+import { Public } from '../../common/decorators/public.decorator.js';
 import { UserRoles, VehicleStates } from '../../common/enums/domain.enums.js';
 
 export class CreateVehicleDto {
@@ -22,6 +24,15 @@ export class VehicleController {
   @Get()
   async findAll(): Promise<Vehicle[]> {
     return this.vehicleService.findAll();
+  }
+
+  @Get('available-count')
+  @Public()
+  @UseGuards(ApiKeyGuard)
+  async availableCount(): Promise<{ count: number }> {
+    const vehicles = await this.vehicleService.findAll();
+    const count = vehicles.filter((v) => v.state === VehicleStates.AVAILABLE).length;
+    return { count };
   }
 
   @Get(':id')
