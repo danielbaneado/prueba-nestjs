@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Put, Body, Param, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { Vehicle } from './vehicle.entity.js';
+import { ApiProperty } from '@nestjs/swagger';
 import { VehicleService } from './vehicle.service.js';
 import { JwtGuard } from '../../common/guards/jwt.guard.js';
 import { RolesGuard } from '../../common/guards/roles.guard.js';
@@ -9,10 +10,15 @@ import { Public } from '../../common/decorators/public.decorator.js';
 import { UserRoles, VehicleStates } from '../../common/enums/domain.enums.js';
 
 export class CreateVehicleDto {
+  @ApiProperty({ example: 'ABC123' })
   plate: string;
+  @ApiProperty({ example: 'Toyota' })
   brand: string;
+  @ApiProperty({ example: 'Hilux' })
   model: string;
+  @ApiProperty({ example: 2020 })
   year: number;
+  @ApiProperty({ example: 10000 })
   mileage?: number;
 }
 

@@ -41,3 +41,47 @@ Documentation: http://localhost:3000/api/docs
 - JWT via cookie `session_token` or Bearer header.
 - x-api-key for external integration endpoint.
 - x-seed-api-key for seed endpoint.
+
+## Example payloads
+
+### Vehicle (PUT)
+```json
+{
+  "plate": "ABC123",
+  "brand": "Toyota",
+  "model": "Hilux",
+  "year": 2021,
+  "mileage": 12000,
+  "state": "available"
+}
+```
+
+### Mechanic (PUT)
+```json
+{
+  "name": "Mecanico 1",
+  "email": "m1@fleetcore.com",
+  "specialty": "Motor",
+  "active": true
+}
+```
+
+### Workshop (PUT)
+```json
+{
+  "name": "Taller Central",
+  "address": "Calle 1",
+  "active": true
+}
+```
+
+### Maintenance (PUT state)
+```json
+{
+  "state": "completed",
+  "workPerformed": "Cambio de aceite",
+  "finalCost": 100,
+  "completionDate": "2026-10-27T10:00:00.000Z",
+  "finalMileage": 10050
+}
+```

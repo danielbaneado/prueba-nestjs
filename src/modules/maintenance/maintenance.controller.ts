@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Put, Body, Param, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { Maintenance } from './maintenance.entity.js';
+import { ApiProperty } from '@nestjs/swagger';
 import { MaintenanceService } from './maintenance.service.js';
 import { JwtGuard } from '../../common/guards/jwt.guard.js';
 import { RolesGuard } from '../../common/guards/roles.guard.js';
@@ -7,12 +8,19 @@ import { Roles } from '../../common/decorators/roles.decorator.js';
 import { UserRoles } from '../../common/enums/domain.enums.js';
 
 export class CreateMaintenanceDto {
+  @ApiProperty({ example: 'PREVENTIVE' })
   type: any;
+  @ApiProperty({ example: 'Mant. inicial' })
   description: string;
+  @ApiProperty({ example: 20000 })
   mileage: number;
+  @ApiProperty({ example: '2026-10-27T10:00:00.000Z' })
   scheduledDate: string;
+  @ApiProperty({ example: 'vehicle-id' })
   vehicleId: string;
+  @ApiProperty({ example: 'mechanic-id' })
   mechanicId: string;
+  @ApiProperty({ example: 'workshop-id' })
   workshopId: string;
 }
 

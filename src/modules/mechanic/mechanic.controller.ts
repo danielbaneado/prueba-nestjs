@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Put, Body, Param, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { Mechanic } from './mechanic.entity.js';
+import { ApiProperty } from '@nestjs/swagger';
 import { MechanicService } from './mechanic.service.js';
 import { JwtGuard } from '../../common/guards/jwt.guard.js';
 import { RolesGuard } from '../../common/guards/roles.guard.js';
@@ -7,8 +8,11 @@ import { Roles } from '../../common/decorators/roles.decorator.js';
 import { UserRoles } from '../../common/enums/domain.enums.js';
 
 export class CreateMechanicDto {
+  @ApiProperty({ example: 'Mecanico 1' })
   name: string;
+  @ApiProperty({ example: 'm1@fleetcore.com' })
   email: string;
+  @ApiProperty({ example: 'Motor' })
   specialty: string;
 }
 

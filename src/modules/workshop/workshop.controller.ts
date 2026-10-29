@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Put, Body, Param, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { Workshop } from './workshop.entity.js';
+import { ApiProperty } from '@nestjs/swagger';
 import { WorkshopService } from './workshop.service.js';
 import { JwtGuard } from '../../common/guards/jwt.guard.js';
 import { RolesGuard } from '../../common/guards/roles.guard.js';
@@ -7,7 +8,9 @@ import { Roles } from '../../common/decorators/roles.decorator.js';
 import { UserRoles } from '../../common/enums/domain.enums.js';
 
 export class CreateWorkshopDto {
+  @ApiProperty({ example: 'Taller Central' })
   name: string;
+  @ApiProperty({ example: 'Calle 1' })
   address: string;
 }
 
