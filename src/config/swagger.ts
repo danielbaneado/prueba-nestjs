@@ -1,16 +1,18 @@
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication, Logger } from '@nestjs/common';
+import { Config, ConfigService } from './config.service.js';
 
 const logger = new Logger('Swagger');
 
 // Cómo autenticarse en /api/docs. La app usa la sesión de BetterAuth en una
-// cookie (no un token Bearer): el navegador la guarda al iniciar sesión y la
+// cookie (no un token Bearer): el navegador la guarda al iniciar sessión y la
 // envía sola en cada "Try it out", porque Swagger está en el mismo origen.
 const descripcion = `
 API REST para gestionar el mantenimiento de la flota de vehículos de FleetCore.
 `;
 
 export const swaggerConfiguration = (app: INestApplication): void => {
+  const configService = app.get(ConfigService);
   const config = new DocumentBuilder()
     .setTitle('SapmiFleetCore Maintenance API')
     .setDescription(descripcion)
@@ -27,5 +29,6 @@ export const swaggerConfiguration = (app: INestApplication): void => {
     swaggerOptions: { persistAuthorization: true },
   });
 
-  logger.log(`Documentación disponible en http://localhost:${5003}/api/docs`);
+  const port = configService.getNumber(Config.APP_PORT) ?? 3000;
+  logger.log(`Documentación disponible en http://localhost:${port}/api/docs`);
 };

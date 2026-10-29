@@ -10,6 +10,12 @@ services:
       - "${POSTGRES_HOST_PORT:-5433}:${POSTGRES_PORT:-5432}"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-nodejs} -d ${POSTGRES_DB:-postgres}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   app:
     build: .
@@ -18,7 +24,8 @@ services:
     ports:
       - "${APP_PORT:-5003}:5003"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   pgdata:

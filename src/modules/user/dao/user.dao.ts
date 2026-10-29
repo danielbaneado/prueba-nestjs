@@ -15,16 +15,18 @@ export class UserDao {
     return this.repo.find();
   }
   async create(data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
-    const entity = this.repo.create(data as any);
-    return this.repo.save(entity) as any;
+    const entity = this.repo.create(data);
+    return this.repo.save(entity);
   }
   async update(id: string, data: Partial<User>): Promise<User | undefined> {
-    await this.repo.update(id, data as any);
+    await this.repo.update(id, data);
     return this.findById(id);
   }
   async delete(id: string): Promise<boolean> {
     const res = await this.repo.delete(id);
     return (res.affected ?? 0) > 0;
   }
-  count(): number { return 0; }
+  async count(): Promise<number> {
+    return this.repo.count();
+  }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Body, Param, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Body, Param, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { Workshop } from './workshop.entity.js';
 import { ApiProperty } from '@nestjs/swagger';
 import { WorkshopService } from './workshop.service.js';
@@ -41,5 +41,19 @@ export class WorkshopController {
   @Roles(UserRoles.ADMIN)
   async update(@Param('id') id: string, @Body() dto: Partial<Workshop>): Promise<Workshop> {
     return this.service.update(id, dto);
+  }
+
+  /** Desactiva un taller (idempotente). */
+  @Patch(':id/inactivate')
+  @Roles(UserRoles.ADMIN)
+  async inactivate(@Param('id') id: string): Promise<Workshop> {
+    return this.service.inactivate(id);
+  }
+
+  /** Activa un taller (idempotente). */
+  @Patch(':id/activate')
+  @Roles(UserRoles.ADMIN)
+  async activate(@Param('id') id: string): Promise<Workshop> {
+    return this.service.activate(id);
   }
 }

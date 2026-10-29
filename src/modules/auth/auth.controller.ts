@@ -12,6 +12,7 @@ import { LoginDto, RefreshDto } from './dto/auth.dto.js';
 import { JwtGuard } from '../../common/guards/jwt.guard.js';
 import { CurrentUser } from '../../common/decorators/current-user.decorator.js';
 import { Roles } from '../../common/decorators/roles.decorator.js';
+import { Raw } from '../../common/decorators/raw.decorator.js';
 import { UserRoles, type User, type UserResponse } from '../user/user.entity.js';
 
 export interface LoginResponse {
@@ -54,6 +55,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @Raw()
   logout(@Res({ passthrough: true }) res: Response): { ok: boolean } {
     res.clearCookie('session_token');
     return { ok: true };
@@ -61,6 +63,7 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtGuard)
+  @Raw()
   me(@CurrentUser() user: User): { id: string; email: string; roles: UserRoles[] } {
     return { id: user.id, email: user.email, roles: user.roles };
   }
@@ -68,6 +71,7 @@ export class AuthController {
   @Get('admin')
   @UseGuards(JwtGuard)
   @Roles(UserRoles.ADMIN)
+  @Raw()
   admin(@CurrentUser() user: User): { message: string; user: string } {
     return { message: 'Acceso de administrador', user: user.email };
   }

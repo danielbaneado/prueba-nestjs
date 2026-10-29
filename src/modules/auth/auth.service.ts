@@ -1,7 +1,6 @@
 import {
   Injectable,
   UnauthorizedException,
-  BadRequestException,
   Logger,
 } from '@nestjs/common';
 import { Config, ConfigService } from '../../config/config.service.js';

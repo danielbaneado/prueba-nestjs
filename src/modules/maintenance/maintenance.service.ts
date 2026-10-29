@@ -5,7 +5,7 @@ import { VehicleService } from '../vehicle/vehicle.service.js';
 import { MechanicService } from '../mechanic/mechanic.service.js';
 import { WorkshopService } from '../workshop/workshop.service.js';
 import { VehicleStates } from '../../common/enums/domain.enums.js';
-import { MaintenanceStates, MaintenanceTypes } from '../../common/enums/domain.enums.js';
+import { MaintenanceStates } from '../../common/enums/domain.enums.js';
 
 @Injectable()
 export class MaintenanceService {
@@ -32,11 +32,15 @@ export class MaintenanceService {
     if (!workshop) throw new NotFoundException('Workshop not found');
     if (!workshop.active) throw new BadRequestException('Workshop inactive');
 
-    const activeMaintenances = await this.dao.findAll();
-    const vehicleActive = activeMaintenances.find((m) => m.vehicleId === data.vehicleId && (m.state === MaintenanceStates.SCHEDULED || m.state === MaintenanceStates.IN_PROGRESS));
-    if (vehicleActive) throw new ConflictException('Vehicle already has active maintenance');
-    const mechanicActive = activeMaintenances.find((m) => m.mechanicId === data.mechanicId && (m.state === MaintenanceStates.SCHEDULED || m.state === MaintenanceStates.IN_PROGRESS));
-    if (mechanicActive) throw new ConflictException('Mechanic already has active maintenance');
+    const activeStates = [MaintenanceStates.SCHEDULED, MaintenanceStates.IN_PROGRESS];
+    const vehicleActive = await this.dao.findByVehicle(data.vehicleId);
+    if (vehicleActive.some((m) => activeStates.includes(m.state))) {
+      throw new ConflictException('Vehicle already has active maintenance');
+    }
+    const mechanicActive = await this.dao.findByMechanic(data.mechanicId);
+    if (mechanicActive.some((m) => activeStates.includes(m.state))) {
+      throw new ConflictException('Mechanic already has active maintenance');
+    }
 
     if (data.mileage < vehicle.mileage) throw new BadRequestException('Mileage cannot be lower than vehicle mileage');
   }

@@ -24,17 +24,19 @@ const AppDataSource = new DataSource({
 export async function runSeed() {
   await AppDataSource.initialize();
   const userRepo = AppDataSource.getRepository(User);
-  const admin = await userRepo.findOne({ where: { email: 'admin@fleetcore.com' } });
-  if (admin) { await AppDataSource.destroy(); throw new Error('Seed already executed'); }
 
-  if ((await userRepo.count()) === 0) {
-    const hash = await bcrypt.hash('Password123!', 10);
-    await userRepo.save([
-      userRepo.create({ email: 'admin@fleetcore.com', passwordHash: hash, roles: [UserRoles.ADMIN] }),
-      userRepo.create({ email: 'tech1@fleetcore.com', passwordHash: hash, roles: [UserRoles.TECHNICIAN] }),
-      userRepo.create({ email: 'tech2@fleetcore.com', passwordHash: hash, roles: [UserRoles.TECHNICIAN] }),
-    ]);
+  // Si la BD ya tiene usuarios, se considera que el seed ya se ejecutó.
+  if ((await userRepo.count()) > 0) {
+    await AppDataSource.destroy();
+    throw new Error('Seed already executed');
   }
+
+  const hash = await bcrypt.hash('Password123!', 10);
+  await userRepo.save([
+    userRepo.create({ email: 'admin@fleetcore.com', passwordHash: hash, roles: [UserRoles.ADMIN] }),
+    userRepo.create({ email: 'tech1@fleetcore.com', passwordHash: hash, roles: [UserRoles.TECHNICIAN] }),
+    userRepo.create({ email: 'tech2@fleetcore.com', passwordHash: hash, roles: [UserRoles.TECHNICIAN] }),
+  ]);
 
   const mechanicRepo = AppDataSource.getRepository(Mechanic);
   if ((await mechanicRepo.count()) === 0) {

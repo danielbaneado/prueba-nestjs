@@ -21,11 +21,19 @@ export class MechanicService {
     return (await this.dao.update(id, data)) as Mechanic;
   }
 
+  /** Desactiva un mecánico (idempotente). */
   async inactivate(id: string): Promise<Mechanic> {
-    return this.update(id, { active: false });
+    const m = await this.dao.findById(id);
+    if (!m) throw new NotFoundException('Mechanic not found');
+    if (m.active === false) return m;
+    return (await this.dao.update(id, { active: false })) as Mechanic;
   }
 
+  /** Activa un mecánico (idempotente). */
   async activate(id: string): Promise<Mechanic> {
-    return this.update(id, { active: true });
+    const m = await this.dao.findById(id);
+    if (!m) throw new NotFoundException('Mechanic not found');
+    if (m.active === true) return m;
+    return (await this.dao.update(id, { active: true })) as Mechanic;
   }
 }

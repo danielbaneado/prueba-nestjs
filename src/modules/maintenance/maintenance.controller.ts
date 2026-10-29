@@ -5,11 +5,13 @@ import { MaintenanceService } from './maintenance.service.js';
 import { JwtGuard } from '../../common/guards/jwt.guard.js';
 import { RolesGuard } from '../../common/guards/roles.guard.js';
 import { Roles } from '../../common/decorators/roles.decorator.js';
-import { UserRoles } from '../../common/enums/domain.enums.js';
+import { UserRoles, MaintenanceStates, MaintenanceTypes } from '../../common/enums/domain.enums.js';
+import { IsEnum, IsOptional, IsString, IsNumber } from 'class-validator';
 
 export class CreateMaintenanceDto {
-  @ApiProperty({ example: 'PREVENTIVE' })
-  type: any;
+  @ApiProperty({ example: 'PREVENTIVE', enum: MaintenanceTypes })
+  @IsEnum(MaintenanceTypes)
+  type: MaintenanceTypes;
   @ApiProperty({ example: 'Mant. inicial' })
   description: string;
   @ApiProperty({ example: 20000 })
@@ -22,6 +24,32 @@ export class CreateMaintenanceDto {
   mechanicId: string;
   @ApiProperty({ example: 'workshop-id' })
   workshopId: string;
+}
+
+export class UpdateMaintenanceStateDto {
+  @ApiProperty({ example: 'completed', enum: MaintenanceStates })
+  @IsEnum(MaintenanceStates)
+  state: MaintenanceStates;
+
+  @ApiProperty({ example: 'Cambio de aceite', required: false })
+  @IsOptional()
+  @IsString()
+  workPerformed?: string;
+
+  @ApiProperty({ example: 100, required: false })
+  @IsOptional()
+  @IsNumber()
+  finalCost?: number;
+
+  @ApiProperty({ example: '2026-10-27T10:00:00.000Z', required: false })
+  @IsOptional()
+  @IsString()
+  completionDate?: string;
+
+  @ApiProperty({ example: 10050, required: false })
+  @IsOptional()
+  @IsNumber()
+  finalMileage?: number;
 }
 
 @Controller('maintenances')
@@ -50,11 +78,15 @@ export class MaintenanceController {
       vehicleId: dto.vehicleId,
       mechanicId: dto.mechanicId,
       workshopId: dto.workshopId,
-    } as any);
+    });
   }
 
   @Put(':id/state')
-  async updateState(@Param('id') id: string, @Body() body: { state: any }): Promise<Maintenance> {
-    return this.service.updateState(id, body.state);
+  async updateState(
+    @Param('id') id: string,
+    @Body() dto: UpdateMaintenanceStateDto,
+  ): Promise<Maintenance> {
+    const { state, ...closing } = dto;
+    return this.service.updateState(id, state, closing);
   }
 }

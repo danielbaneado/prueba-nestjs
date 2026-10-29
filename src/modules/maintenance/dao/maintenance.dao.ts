@@ -18,11 +18,11 @@ export class MaintenanceDao {
     return this.repo.find({ where: { mechanicId } }); 
   }
   async create(data: Partial<Maintenance>): Promise<Maintenance> {
-    const entity = this.repo.create(data as any);
-    return this.repo.save(entity) as any;
+    const entity = this.repo.create(data);
+    return this.repo.save(entity);
   }
   async update(id: string, data: Partial<Maintenance>): Promise<Maintenance | undefined> {
-    await this.repo.update(id, data as any);
+    await this.repo.update(id, data);
     return this.findById(id);
   }
 }

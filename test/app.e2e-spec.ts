@@ -26,22 +26,6 @@ describe('AppController (e2e)', () => {
     expect(typeof body.timestamp).toBe('string');
   });
 
-  it('/captcha (GET) returns a token and a question', async () => {
-    const { body } = await request(app.getHttpServer()).get('/captcha').expect(200);
-    expect(typeof body.token).toBe('string');
-    expect(body.token.length).toBeGreaterThan(0);
-    expect(typeof body.question).toBe('string');
-    expect(body.question).toContain('?');
-  });
-
-  it('/captcha/verify (GET) returns ok false for an unknown token', async () => {
-    const { body } = await request(app.getHttpServer())
-      .get('/captcha/verify')
-      .query({ token: 'unknown', answer: '0' })
-      .expect(200);
-    expect(body.ok).toBe(false);
-  });
-
   afterEach(async () => {
     await app.close();
   });

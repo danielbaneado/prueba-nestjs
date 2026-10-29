@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Body, Param, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Body, Param, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { Mechanic } from './mechanic.entity.js';
 import { ApiProperty } from '@nestjs/swagger';
 import { MechanicService } from './mechanic.service.js';
@@ -41,5 +41,19 @@ export class MechanicController {
   @Roles(UserRoles.ADMIN)
   async update(@Param('id') id: string, @Body() dto: Partial<Mechanic>): Promise<Mechanic> {
     return this.service.update(id, dto);
+  }
+
+  /** Desactiva un mecánico (idempotente). */
+  @Patch(':id/inactivate')
+  @Roles(UserRoles.ADMIN)
+  async inactivate(@Param('id') id: string): Promise<Mechanic> {
+    return this.service.inactivate(id);
+  }
+
+  /** Activa un mecánico (idempotente). */
+  @Patch(':id/activate')
+  @Roles(UserRoles.ADMIN)
+  async activate(@Param('id') id: string): Promise<Mechanic> {
+    return this.service.activate(id);
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Body, Param, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Body, Param, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { Vehicle } from './vehicle.entity.js';
 import { ApiProperty } from '@nestjs/swagger';
 import { VehicleService } from './vehicle.service.js';
@@ -58,12 +58,26 @@ export class VehicleController {
       year: dto.year,
       mileage: dto.mileage ?? 0,
       state: VehicleStates.AVAILABLE,
-    } as any);
+    });
   }
 
   @Put(':id')
   @Roles(UserRoles.ADMIN)
   async update(@Param('id') id: string, @Body() dto: Partial<Vehicle>): Promise<Vehicle> {
     return this.vehicleService.update(id, dto);
+  }
+
+  /** Desactiva un vehicle (idempotente). */
+  @Patch(':id/inactivate')
+  @Roles(UserRoles.ADMIN)
+  async inactivate(@Param('id') id: string): Promise<Vehicle> {
+    return this.vehicleService.inactivate(id);
+  }
+
+  /** Reactiva un vehicle (idempotente). */
+  @Patch(':id/activate')
+  @Roles(UserRoles.ADMIN)
+  async activate(@Param('id') id: string): Promise<Vehicle> {
+    return this.vehicleService.activate(id);
   }
 }

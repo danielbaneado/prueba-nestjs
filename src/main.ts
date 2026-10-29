@@ -2,7 +2,7 @@ import 'reflect-metadata'; // Obligatorio antes de cualquier import de Nest (iny
 
 import { NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { HttpAdapterHost } from '@nestjs/core';
+import { HttpAdapterHost, Reflector } from '@nestjs/core';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 
@@ -22,7 +22,7 @@ const logger = new Logger('Bootstrap');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    // Logger de Nest ya respeta LOG_LEVEL de forma nativa.
+    // Logger explícito: solo error, warn y log (no debug).
     logger: ['error', 'warn', 'log'],
   });
 
@@ -32,12 +32,20 @@ async function bootstrap() {
   // Headers de seguridad por defecto (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, etc.).
   app.use(helmet());
 
-  // Parse del header Cookie -> req.cookies (necesario para la cookie de sesión).
+  // Parse del header Cookie -> req.cookies (necesario para la cookie de sessión).
   app.use(cookieParser());
 
   // CORS: orígenes permitidos desde CORS_ORIGIN + credenciales habilitadas.
   // Se usa createCorsMiddleware para devolver 403 (no 500) cuando el origen no está autorizado.
+  // Se aplica ANTES del rate limiting para que las solicitudes rechazadas no cuenten.
   app.use(createCorsMiddleware(configService));
+
+  // Rate limiting global (safety net): evita que una IP abogue la app entera.
+  app.use(createGlobalLimiter(configService));
+
+  // Rate limiting estricto para endpoints sensibles (login, registro, reset, captcha).
+  // Se aplica solo al prefijo /auth; cuando existan esas rutas, se activará solo allí.
+  app.use('/auth', createAuthLimiter(configService));
 
   // Validación global de DTOs: descarta propiedades no declaradas y transforma tipos.
   app.useGlobalPipes(
@@ -48,16 +56,11 @@ async function bootstrap() {
     }),
   );
 
-  // Rate limiting global (safety net): evita que una IP abogue la app entera.
-  app.use(createGlobalLimiter(configService));
-
-  // Rate limiting estricto para endpoints sensibles (login, registro, reset, captcha).
-  // Se aplica solo al prefijo /auth; cuando existan esas rutas, se activará solo allí.
-  app.use('/auth', createAuthLimiter(configService));
-
   // Filtro global de excepciones: normaliza cualquier error a una respuesta consistente.
   app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
-  app.useGlobalInterceptors(new ResponseInterceptor());
+  // Interceptor global de respuesta. Se instancia directamente con el Reflector
+  // para evitar dependencias del contenedor de DI que pueden no estar disponibles.
+  app.useGlobalInterceptors(new ResponseInterceptor(new Reflector()));
 
   // Cierre ordenado (SIGTERM/SIGINT) para contenedores y orquestadores.
   app.enableShutdownHooks();
@@ -66,7 +69,8 @@ async function bootstrap() {
   swaggerConfiguration(app);
 
   const port = configService.getNumber(Config.APP_PORT) ?? 3000;
-  await app.listen(port);
+  // Escucha en todas las interfaces para compatibilidad con contenedores Docker.
+  await app.listen(port, '0.0.0.0');
 
   logger.log(`Aplicación escuchando en el puerto ${port}`);
 }

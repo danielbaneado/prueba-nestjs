@@ -23,11 +23,19 @@ export class WorkshopService {
     return (await this.dao.update(id, data)) as Workshop;
   }
 
+  /** Desactiva un taller (idempotente). */
   async inactivate(id: string): Promise<Workshop> {
-    return this.update(id, { active: false });
+    const w = await this.dao.findById(id);
+    if (!w) throw new NotFoundException('Workshop not found');
+    if (w.active === false) return w;
+    return (await this.dao.update(id, { active: false })) as Workshop;
   }
 
+  /** Activa un taller (idempotente). */
   async activate(id: string): Promise<Workshop> {
-    return this.update(id, { active: true });
+    const w = await this.dao.findById(id);
+    if (!w) throw new NotFoundException('Workshop not found');
+    if (w.active === true) return w;
+    return (await this.dao.update(id, { active: true })) as Workshop;
   }
 }

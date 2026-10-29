@@ -5,21 +5,21 @@ import { Vehicle } from '../vehicle.entity.js';
 export class VehicleDao {
   constructor(@InjectRepository(Vehicle) private readonly repo: Repository<Vehicle>) {}
 
-  async findAll(): Promise<Vehicle[]> { 
-    return this.repo.find(); 
+  async findAll(): Promise<Vehicle[]> {
+    return this.repo.find();
   }
-  async findById(id: string): Promise<Vehicle | undefined> { 
-    return (await this.repo.findOne({ where: { id } })) ?? undefined; 
+  async findById(id: string): Promise<Vehicle | undefined> {
+    return (await this.repo.findOne({ where: { id } })) ?? undefined;
   }
-  async findByPlate(plate: string): Promise<Vehicle | undefined> { 
-    return (await this.repo.findOne({ where: { plate } })) ?? undefined; 
+  async findByPlate(plate: string): Promise<Vehicle | undefined> {
+    return (await this.repo.findOne({ where: { plate } })) ?? undefined;
   }
   async create(data: Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'>): Promise<Vehicle> {
-    const entity = this.repo.create(data as any);
-    return this.repo.save(entity) as any;
+    const entity = this.repo.create(data);
+    return this.repo.save(entity);
   }
   async update(id: string, data: Partial<Vehicle>): Promise<Vehicle | undefined> {
-    await this.repo.update(id, data as any);
+    await this.repo.update(id, data);
     return this.findById(id);
   }
 }

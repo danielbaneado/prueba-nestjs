@@ -15,11 +15,11 @@ export class MechanicDao {
     return (await this.repo.findOne({ where: { email } })) ?? undefined; 
   }
   async create(data: Omit<Mechanic, 'id' | 'createdAt' | 'updatedAt'>): Promise<Mechanic> {
-    const entity = this.repo.create(data as any);
-    return this.repo.save(entity) as any;
+    const entity = this.repo.create(data);
+    return this.repo.save(entity);
   }
   async update(id: string, data: Partial<Mechanic>): Promise<Mechanic | undefined> {
-    await this.repo.update(id, data as any);
+    await this.repo.update(id, data);
     return this.findById(id);
   }
 }
